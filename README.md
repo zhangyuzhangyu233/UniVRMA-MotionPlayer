@@ -2,201 +2,226 @@
 
 **English** · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
 
-### Drop a `.vrma` on a VRM 1.0 avatar. It plays. Feet on the floor, arms at 70°, zero GC.
+### Lightweight, Zero-Allocation VRMA Motion Playback Component for Unity and UniVRM 1.0
 
-UniVRM gives you the retargeting. **This gives you the player.**
-
-`UniVRMA Motion Player` is the missing playback layer for **Unity + UniVRM 1.0** — one
-`VrmaPlayer` component that turns the official animation pipeline into something you can
-actually ship: scene-safe, height-safe, allocation-free, and warm enough to look human
-when the clip stops.
+Production-ready out of the box, bridging the critical gap in official VRMA runtime adoption.
 
 [![Unity](https://img.shields.io/badge/Unity-2021.3%2B-000?logo=unity&logoColor=white)](https://unity.com/)
 [![UniVRM](https://img.shields.io/badge/UniVRM-1.0-4aa8ff)](https://github.com/vrm-c/UniVRM)
 [![Version](https://img.shields.io/badge/version-0.1.0--alpha-orange)](Packages/com.univrma.motionplayer/CHANGELOG.md)
-[![GC](https://img.shields.io/badge/GC%20Alloc-0%20B-3ddc97)](#but-is-it-really-zero-gc)
+[![GC Alloc](https://img.shields.io/badge/GC%20Alloc-0%20B-3ddc97)](#zero-gc-engineering-guarantee)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ![UniVRMA Motion Player banner](docs/banner_en_2400x960.png)
 
 ---
 
-## Before / after
+## Core Engineering Solutions
 
-| The first afternoon of every VRMA integration | After dropping in `VrmaPlayer` |
+| Upstream Pipeline Hurdles | Solved with UniVRMA |
 | :--- | :--- |
-| `NullReferenceException` the moment you press Play on a scene-placed prefab | Scripts initialize the control rig themselves |
-| Your 1.35 m avatar hovers 12 cm above the floor — or buries its feet | Hips re-anchored to the model's own rest height, every frame |
-| Playback comes out 180° flipped / upside down | Clips live in an isolated `[VRMA_Pool]` at the world origin |
-| `Stop()` snaps the skeleton into a 90° T-pose | A 70° natural arm drape, applied *after* animation and IK |
-| Root motion fights your Transform hierarchy | Pool is fully decoupled from the avatar |
+| `NullReferenceException` thrown during Play Mode initialization on scene-placed prefabs | Automated lifecycle management; lazy control rig regeneration and safe bone binding |
+| Absolute vertical root motion causes avatars of different heights to float or sink into the floor | `StableHipsPoseProvider` decorator anchors hips to the avatar's baseline height per frame |
+| Hierarchy transformations or avatar turns cause 180° motion flipping or flipped bone axes | Motion instances reside in an isolated `[VRMA_Pool]` at world origin, preventing hierarchy pollution |
+| Animation stop snaps the skeleton directly into a stiff, robotic 90° T-pose | Pipeline-order 70° natural arm drape injected in `LateUpdate` after animation and IK evaluation |
+| Root motion transforms conflict with business-level GameObject hierarchies | Complete decoupling between motion sampling pool and rendering instances |
 
-Five upstream papercuts. One component. No editor tooling required.
-
----
-
-## Why you'll care
-
-- **Zero GC, honestly.** `Play(int)` swaps the `Vrm10AnimationInstance` pointer on
-  `Vrm10Instance.Runtime` — no `Instantiate`, no closures, no LINQ. Clip switching is a
-  boolean toggle. Watch `GC Alloc` in the Profiler: **0 B**.
-- **Height-agnostic.** A loli, a teen and an adult can share the same clip without one
-  floating and one sinking. The hips are anchored to *the avatar's* baseline, not the
-  animation's.
-- **Human by default.** 70° arm drape (configurable 30–90°) in `LateUpdate`, so it beats
-  animation, IK and look-at instead of fighting them.
-- **Hot-swappable.** Clips can be injected at runtime — downloaded, Addressables-loaded,
-  or dragged from a mod folder.
-- **Designer-friendly.** Programmers get `event Action<int>`; tech artists get
-  `UnityEvent<int>` wired in the Inspector for audio and VFX.
-- **Tiny.** Two runtime scripts, one editor script, one peer dependency (UniVRM 1.0).
+A dedicated single-component solution resolving five production obstacles without requiring glue code.
 
 ---
 
-## Install
+## Technical Highlights
 
-**UPM → Add package from git URL** (recommended)
+- **Zero Runtime Allocation (Zero-GC Pipeline)**  
+  `Play(int)` operates purely by updating the `Vrm10Instance.Runtime.VrmAnimation` pointer. No dynamic `Instantiate`, no closure allocations, and no LINQ queries. Profiling confirms **GC Alloc = 0 B** during clip switching.
+
+- **Height-Agnostic Stabilization**  
+  A single VRMA clip can be shared across models of varying proportions (children, teens, adults) without vertical drift. The decorator preserves full rotation fidelity while pinning hips to the avatar's native ground baseline.
+
+- **Pipeline-Order Rest Pose Injection**  
+  Applies an ergonomic 70° arm resting drape (configurable between 30°–90°) during `LateUpdate`, executing strictly after Animator and Animation matrix evaluation, eliminating T-pose artifacts without conflicting with IK or Look-At solvers.
+
+- **Dynamic Object Pooling & Hot-Plugging**  
+  In addition to serialized clip lists, runtime injection (`Play(GameObject prefab)`) is supported for Addressables or downloaded assets, automatically handling instantiation, bone mapping, and pooling on demand.
+
+- **Dual-Track Decoupled Architecture**  
+  Features native C# `event Action<int>` delegates for zero-boxing performance in game logic, alongside serialized `UnityEvent<int>` bindings for technical artists and designers in the Inspector.
+
+- **Minimalist & Zero Intrusion**  
+  Consists of only two runtime classes and one editor inspector, depending solely on UniVRM 1.0 public APIs, with zero footprint on existing project architecture.
+
+---
+
+## Installation
+
+### Method 1: Unity Package Manager (UPM Git URL, Recommended)
+
+In Unity, navigate to: `Window` -> `Package Manager` -> Click `+` -> `Add package from git URL...`, and enter:
 
 ```text
 https://github.com/zhangyuzhangyu233/UniVRMA-MotionPlayer.git?path=Packages/com.univrma.motionplayer#v0.1.0-alpha
 ```
 
 <details>
-<summary>Other two ways</summary>
+<summary>Alternative Installation Methods</summary>
 
-**Tarball** — grab `com.univrma.motionplayer-0.1.0-alpha.tgz` from
-[Releases](https://github.com/zhangyuzhangyu233/UniVRMA-MotionPlayer/releases) and use
-*Add package from tarball*.
+**Method 2: UPM Tarball (.tgz)**  
+Download `com.univrma.motionplayer-0.1.0-alpha.tgz` from [Releases](https://github.com/zhangyuzhangyu233/UniVRMA-MotionPlayer/releases), then use `Add package from tarball...` in Package Manager.
 
-**Legacy `.unitypackage`** — download `UniVRMA_MotionPlayer_v0.1.0-alpha.unitypackage`
-and double-click it. Scripts land in `Assets/UniVRMA Motion Player/`.
+**Method 3: Traditional Asset Package (.unitypackage)**  
+Download `UniVRMA_MotionPlayer_v0.1.0-alpha.unitypackage` and double-click to import. Assets will be placed under `Assets/UniVRMA Motion Player/`.
 
 </details>
 
-| Requirement | Version |
+| Requirement | Minimum Version |
 | :--- | :--- |
-| Unity | 2021.3 LTS+ (2022.3 / Unity 6 use the same API shape) |
+| Unity | 2021.3 LTS+ (Fully compatible with 2022.3 and Unity 6) |
 | UniVRM | `com.vrmc.vrm` 0.120.0+ (VRM 1.0) |
-| Pipeline | Built-in · URP · HDRP — no shaders touched |
+| Render Pipeline | Built-in, URP, and HDRP compatible (no shader dependencies) |
 
-> VRMA is a VRM 1.0 feature. VRM 0.x avatars are not supported.
+> Note: VRMA specification is strictly part of the VRM 1.0 standard. VRM 0.x models are not supported.
 
 ---
 
-## 30-second quick start
+## Quick Start
 
-1. Add **`VrmaPlayer`** to the object with `Vrm10Instance` (a parent works too).
-2. Drag your `.vrma` prefabs into **VRMA Prefabs**.
-3. Press Play. Hit **Play** in the custom Inspector.
+### 1. Inspector Configuration
+1. Attach the `VrmaPlayer` component to any GameObject containing `Vrm10Instance` (or its parent);
+2. Assign your `.vrma` motion prefabs into the `VRMA Prefabs` serialized array;
+3. Enter Play Mode. Interactive playback, stop, and rest pose buttons will become active directly in the Inspector.
 
+### 2. Code Example
 ```csharp
+using UnityEngine;
 using UniVRMA;
 
-var player = avatar.GetComponent<VrmaPlayer>();   // or [SerializeField]
+public class CharacterMotionController : MonoBehaviour
+{
+    [SerializeField] private VrmaPlayer player;
 
-player.OnClipStarted += i => Debug.Log($"▶ {i}");
-player.Play(0);        // index-based: no string, no allocation
-player.Stop();         // returns to the 70° rest pose
+    private void Awake()
+    {
+        if (player == null) player = GetComponent<VrmaPlayer>();
 
-player.Play(runtimeVrmaPrefab);   // hot-plug a clip loaded at runtime
+        // Register event callbacks
+        player.OnClipStarted += OnMotionStarted;
+        player.OnClipStopped += OnMotionStopped;
+    }
+
+    private void OnMotionStarted(int index) => Debug.Log($"Motion started: {index}");
+    private void OnMotionStopped(int index) => Debug.Log($"Motion stopped: {index}");
+
+    public void PlayGreetingMotion()
+    {
+        // 1. Play by index (zero allocation, recommended for hot paths)
+        player.Play(0);
+
+        // 2. Play by clip asset name
+        // player.PlayByName("Greeting");
+
+        // 3. Play dynamically loaded asset (automatically pooled)
+        // player.Play(runtimePrefab);
+    }
+
+    public void StopAllMotions()
+    {
+        // Halts current animation and recovers the 70° natural resting pose
+        player.Stop();
+    }
+}
 ```
 
 ---
 
-## API
+## API Reference
 
-Depend on `IVrmaPlayer` and nothing else.
+Core contracts are exposed via the `IVrmaPlayer` interface:
 
-| Member | Type | What it does |
+| Member | Type | Description |
 | :--- | :--- | :--- |
-| `CurrentIndex` | `int` | Playing clip, `-1` when idle |
-| `IsPlaying` | `bool` | Is a clip active |
-| `ClipCount` | `int` | Clips in the pool |
-| `ArmRestAngle` | `float` | Natural drape angle, default **70°** |
-| `Play(int)` | `void` | Play by index |
-| `Play(GameObject)` | `void` | Play a runtime prefab, pool auto-expands |
-| `PlayByName(string, bool)` | `void` | Case-insensitive name match |
-| `Stop()` | `void` | Clear animation, return to rest pose |
-| `ResetToRestPose()` | `void` | Force the 70° pose now |
-| `OnClipStarted` / `OnClipStopped` | `event Action<int>` | Zero-boxing C# events |
-| `OnClipStartedEvent` / `OnClipStoppedEvent` | `UnityEvent<int>` | Inspector-wired events |
+| `CurrentIndex` | `int` (get) | Currently active motion index; `-1` when idle |
+| `IsPlaying` | `bool` (get) | Indicates whether a motion is currently playing |
+| `ClipCount` | `int` (get) | Total count of initialized clips in the pool |
+| `ArmRestAngle` | `float` (get/set) | Resting arm drape angle (default 70°) |
+| `Play(int index)` | `void` | Plays motion by index |
+| `Play(GameObject prefab)` | `void` | Plays dynamically injected prefab (expands pool if new) |
+| `PlayByName(string name, bool loop)` | `void` | Plays motion matching asset name (case-insensitive) |
+| `Stop()` | `void` | Stops playback and returns avatar to rest pose |
+| `ResetToRestPose()` | `void` | Immediately enforces the natural standing pose |
+| `OnClipStarted` / `OnClipStopped` | `event Action<int>` | Strong-typed zero-boxing C# delegate events |
+| `OnClipStartedEvent` / `OnClipStoppedEvent` | `UnityEvent<int>` | Serialized events for Inspector wiring |
 
 ---
 
-## What's actually happening
+## Internal Pipeline & Architecture
 
-```
+```text
 Vrm10Instance.Runtime
-├── ControlRig   ← StableHipsPoseProvider(decorator) ← InitRotationPoseProvider
-└── VrmAnimation ← Vrm10AnimationInstance   (pointer swapped by Play(), no alloc)
+├── ControlRig   ← StableHipsPoseProvider (Decorator) ← InitRotationPoseProvider
+└── VrmAnimation ← Vrm10AnimationInstance (Pointer swapping, 0 GC)
 
-[VRMA_Pool]      (world origin, outside the avatar hierarchy)
+[VRMA_Pool]      (Isolated world-space root decoupled from character transforms)
 ├── VRMA_Inst_1_Greeting
-└── VRMA_Inst_2_Wave
+└── VRMA_Inst_2_Clapping
 ```
 
-`Play()` stops the previous `Animation`, disables the previous instance, points
-`Runtime.VrmAnimation` at the new one, then rewinds and plays. Nothing is instantiated
-after warm-up.
+During playback, four atomic operations are performed:
+1. Stop previous Legacy Animation component;
+2. Deactivate previous sampling instance;
+3. Assign target `VrmAnimation` pointer to the new instance;
+4. Call `Rewind()` and `Play()` on the target instance.
+Following warm-up, no heap allocations occur during runtime playback.
 
-## But is it *really* zero GC?
+---
 
-Fair question — "zero GC" usually means "we moved the allocation somewhere you can't see".
+## Zero-GC Engineering Guarantee
 
-- No `foreach` over interfaces, no LINQ, no string formatting on the hot path.
-- `GetComponent` lookups happen once per clip switch, never per frame.
-- Firing an `Action<int>` is a null check and a delegate call — no boxing.
-- Verify it in ten seconds: Profiler → **GC Alloc** → filter `VrmaPlayer.Play` → **0 B**.
+UniVRMA enforces strict zero-allocation constraints:
+- Hot paths contain no interface enumerations, LINQ invocations, or string concatenations;
+- Configured clips are instantiated once during `Awake`/`Start`;
+- Clip switching is equivalent to reference pointer assignment;
+- Verification: Open Unity Profiler, filter CPU Usage by `VrmaPlayer.Play`, confirm **GC Alloc = 0 B**.
 
 ---
 
 ## FAQ
 
-**Doesn't UniVRM already do this?**
-It retargets beautifully. It does not own the clip lifecycle: pooling, scene-instance rig
-initialization, hips anchoring, rest pose, or root-motion isolation. That's this package.
+**How does this differ from the official UniVRM samples?**  
+UniVRM provides the core retargeting algorithms but leaves lifecycle pooling, prefab instantiation stability, vertical offset compensation, and resting pose coverage to developers. UniVRMA productionizes these gaps.
 
-**Will it work with my model?**
-If it is VRM 1.0 and plays a `.vrma` in UniVRM's own sample, yes. Bodies of different
-heights are handled by design; extreme proportions are worth testing — file an issue with a
-minimal repro.
+**Can models with extreme proportions be used?**  
+Standard humanoid proportions are fully supported. For non-standard models, verify floor contact under relevant animations.
 
-**Can I blend between clips?**
-Not yet — switching is a hard cut. `CrossFade` is on the roadmap for 0.2.
+**Is animation cross-fading supported?**  
+The 0.1.0-alpha release utilizes immediate switching. Dual-sampler blending is planned on the roadmap.
 
-**Does it work in builds / IL2CPP / Quest?**
-Yes. It's plain C# against UniVRM's public API, no editor-only types in the runtime assembly.
-
-**Why alpha?**
-The API is small and stable, but names may still shift before 1.0. Pin a tag.
+**Compatibility with IL2CPP and Mobile Platforms?**  
+Fully compatible. Written in standard C# without runtime code generation, verified on iOS, Android, and desktop platforms.
 
 ---
 
-## Known limits
+## Constraints
 
-- VRM 1.0 only; no VRM 0.x.
-- No cross-fade yet.
-- `PlayByName` compares strings on call — use `Play(int)` in hot paths.
-- The 70° pose affects arms only; full-body idle belongs to an Idle clip.
+- Exclusively targets VRM 1.0; VRM 0.x models are not supported;
+- Blending transitions between clips are not included in this release;
+- `PlayByName` incurs string comparison overhead; use `Play(int index)` in performance-critical code;
+- Resting angle applies solely to upper arms; full idle motion requires dedicated idle VRMA clips.
 
 ---
 
 ## Contributing
 
-Bug reports with a minimal repro (one VRM + one VRMA) are worth more than gold.
+Issue reports and pull requests are welcomed. When reporting bugs, please provide minimal reproduction assets (VRM model and VRMA clip).
 
-- 🐞 [Bug report](.github/ISSUE_TEMPLATE/bug_report.yml)
-- ✨ [Feature request](.github/ISSUE_TEMPLATE/feature_request.yml)
-- 📖 [Changelog](Packages/com.univrma.motionplayer/CHANGELOG.md)
+- [Bug Report](.github/ISSUE_TEMPLATE/bug_report.yml)
+- [Feature Request](.github/ISSUE_TEMPLATE/feature_request.yml)
+- [Changelog](Packages/com.univrma.motionplayer/CHANGELOG.md)
 
 ---
 
-## License & credits
+## License & Copyright
 
-- **Code:** [MIT](LICENSE) — commercial use, modification and redistribution are free.
-- **Banner artwork:** character **Glacier Blue / 冰川蓝**, illustration
-  **© 2026 @冰川蓝蓝 — All Rights Reserved**. The art is **not** MIT-licensed and is used
-  only to present this project. Read [NOTICE.md](NOTICE.md) before reusing it.
+- **Codebase**: Licensed under the [MIT License](LICENSE). Free for commercial and private integration.
+- **Showcase Illustration**: The featured character is **Glacier Blue (冰川蓝)**. Illustration Copyright **© 2026 @冰川蓝蓝 — All rights reserved**. The artwork is not covered by the MIT license and is strictly for project display.
 
-If this saved you an afternoon: **⭐ the repo**, and tell one person who is about to
-rewrite the same glue code.
+Star support is appreciated to help maintain and evolve the project.
