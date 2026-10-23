@@ -1,4 +1,4 @@
-# UniVRMA Motion Player
+﻿# UniVRMA Motion Player
 
 [English](README.md) · [简体中文](README.zh-CN.md) · **日本語**
 
@@ -185,9 +185,9 @@ API は小さく安定していますが、1.0 までに名前が変わる可能
 
 最小再現（VRM 1 体 + VRMA 1 本）付きのバグ報告が、何より価値があります。
 
-- 🐞 [バグ報告](.github/ISSUE_TEMPLATE/bug_report.yml)
-- ✨ [機能リクエスト](.github/ISSUE_TEMPLATE/feature_request.yml)
-- 📖 [変更履歴](Packages/com.univrma.motionplayer/CHANGELOG.md)
+- [バグ報告](.github/ISSUE_TEMPLATE/bug_report.yml)
+- [機能リクエスト](.github/ISSUE_TEMPLATE/feature_request.yml)
+- [変更履歴](Packages/com.univrma.motionplayer/CHANGELOG.md)
 
 ---
 
@@ -195,9 +195,9 @@ API は小さく安定していますが、1.0 までに名前が変わる可能
 
 - **コード**：[MIT](LICENSE)。商用利用・改変・再配布は自由です。
 - **バナーイラスト**：キャラクター **氷川藍 / Glacier Blue**、イラスト
-  **© 2026 @冰川蓝蓝 — All Rights Reserved**。イラストは MIT の対象**外**で、
+  **© 2026 冰川蓝蓝 — All Rights Reserved**。イラストは MIT の対象**外**で、
   本プロジェクトの告知にのみ使用しています。再利用前に [NOTICE.md](NOTICE.md) を
   ご確認ください。
 
-午後ひとつ分助かったなら：**⭐ をください**。そして、同じ接着コードを書き直そうと
+午後ひとつ分助かったなら：**Star をいただけると幸いです**。そして、同じ接着コードを書き直そうと
 している誰かに教えてあげてください。

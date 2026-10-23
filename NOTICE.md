@@ -12,7 +12,7 @@ retained. The MIT grant applies to **source code and documentation only**.
 | | |
 | :--- | :--- |
 | Character | Glacier Blue / 冰川蓝 |
-| Illustration | **© 2026 @冰川蓝蓝 — All Rights Reserved** |
+| Illustration | **© 2026 冰川蓝蓝 — All Rights Reserved** |
 | File | `glacier_blue.png` (and any derived crops / avatars of it) |
 | Used for | Project banner (`banner.html`), GitHub Release page, promotional screenshots |
 
@@ -20,14 +20,14 @@ The illustration is **not** covered by the MIT License and is **not** part of th
 open-source grant. It is used by the project maintainers solely to present the
 project. You may **not** extract, redistribute, resell, train on, or reuse the
 artwork in your own project, product, or promotional material without the express
-written permission of **@冰川蓝蓝**.
+written permission of **冰川蓝蓝**.
 
 If you fork or redistribute this repository:
 - keep `NOTICE.md` and the visible credit intact, **or**
 - remove `glacier_blue.png` and the `<img alt="Glacier Blue …">` block from
   `banner.html` and supply your own artwork.
 
-To re-license or commission the character, contact the author: **@冰川蓝蓝**.
+To re-license or commission the character, contact the author: **冰川蓝蓝**.
 
 ## 3. Third-party runtime dependencies
 
