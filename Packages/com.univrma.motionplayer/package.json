@@ -1,0 +1,25 @@
+{
+  "name": "com.univrma.motionplayer",
+  "version": "0.1.0-alpha",
+  "displayName": "UniVRMA Motion Player",
+  "description": "An ultra-lightweight, zero-overhead VRMA (VRM Animation) motion player for UniVRM 1.0. Out-of-the-box fixes for scene-placed prefab NRE, upside-down rotation flipping, and hips position drifting.",
+  "unity": "2021.3",
+  "unityRelease": "0f1",
+  "keywords": [
+    "vrm",
+    "vrm10",
+    "vrma",
+    "animation",
+    "retarget",
+    "motion",
+    "avatar"
+  ],
+  "author": {
+    "name": "UniVRMA Community",
+    "url": "https://github.com/zhangyuzhangyu233/UniVRMA-MotionPlayer"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "com.vrmc.vrm": "0.120.0"
+  }
+}

@@ -1,0 +1,169 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  UniVRMA Motion Player — automated release pipeline
+#
+#  Trigger : push a tag like v0.1.0-alpha  (git tag v0.1.0-alpha && git push --tags)
+#  Produces: com.univrma.motionplayer-<version>.tgz   (UPM / Package Manager)
+#            UniVRMA_MotionPlayer_v<version>.unitypackage (legacy one-click import)
+#            SHA256SUMS.txt
+#  Publishes a GitHub Release with all three attached.
+#
+#  No Unity license, no Unity install: the .unitypackage is generated from the
+#  package's own .meta GUIDs by .github/scripts/build_unitypackage.py.
+# ─────────────────────────────────────────────────────────────────────────────
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+# Required to create the Release and upload assets.
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PACKAGE_NAME: com.univrma.motionplayer
+  PACKAGE_PATH: Packages/com.univrma.motionplayer
+  ASSET_PREFIX: Assets/UniVRMA Motion Player
+
+jobs:
+  publish:
+    name: Pack · Verify · Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # ── version resolution ────────────────────────────────────────────────
+      - name: Resolve version from tag
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#v}"
+          if [ -z "$version" ] || [ "$version" = "$tag" ]; then
+            echo "::error::Tag '${tag}' is not a v* version tag (expected e.g. v0.1.0-alpha)."
+            exit 1
+          fi
+          echo "tag=${tag}"                         >> "$GITHUB_OUTPUT"
+          echo "version=${version}"                 >> "$GITHUB_OUTPUT"
+          echo "tarball=${PACKAGE_NAME}-${version}.tgz" >> "$GITHUB_OUTPUT"
+          echo "unitypackage=UniVRMA_MotionPlayer_v${version}.unitypackage" >> "$GITHUB_OUTPUT"
+          echo "→ releasing ${tag}"
+
+      - name: Guard — tag must match package.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          declared=$(node -p "require('./${PACKAGE_PATH}/package.json').version")
+          expected="${{ steps.version.outputs.version }}"
+          if [ "$declared" != "$expected" ]; then
+            echo "::error::Tag v${expected} does not match version '${declared}' in ${PACKAGE_PATH}/package.json."
+            echo "::error::Bump package.json (and CHANGELOG.md) and re-tag."
+            exit 1
+          fi
+          echo "✓ package.json version ${declared} matches the tag."
+
+      - name: Guard — required package files
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in package.json LICENSE README.md CHANGELOG.md Runtime Editor; do
+            test -e "${PACKAGE_PATH}/${f}" || { echo "::error::Missing ${PACKAGE_PATH}/${f}"; exit 1; }
+          done
+          echo "✓ package layout looks like a valid UPM package."
+
+      # ── UPM tarball ──────────────────────────────────────────────────────
+      - name: Pack UPM tarball (npm pack)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          ( cd "${PACKAGE_PATH}" && npm pack --ignore-scripts --pack-destination "${GITHUB_WORKSPACE}/dist" )
+          tar -tzf "dist/${{ steps.version.outputs.tarball }}" > /tmp/pkg-list.txt
+          # Unity requires the manifest at package/package.json inside the tarball.
+          grep -qx "package/package.json" /tmp/pkg-list.txt \
+            || { echo "::error::Tarball is missing package/package.json"; cat /tmp/pkg-list.txt; exit 1; }
+          grep -qx "package/Runtime/UniVRMA.MotionPlayer.asmdef" /tmp/pkg-list.txt \
+            || { echo "::error::Tarball is missing the runtime assembly definition"; exit 1; }
+          echo "✓ tarball contains $(wc -l < /tmp/pkg-list.txt) entries."
+
+      # ── legacy .unitypackage (no Unity Editor needed) ────────────────────
+      - name: Build .unitypackage from .meta GUIDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/build_unitypackage.py \
+            --package "${PACKAGE_PATH}" \
+            --out "dist/${{ steps.version.outputs.unitypackage }}" \
+            --asset-prefix "${ASSET_PREFIX}" \
+            --include Runtime --include Editor
+
+      - name: Checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum *.tgz *.unitypackage > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: univrma-motionplayer-${{ steps.version.outputs.version }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 30
+
+      # ── GitHub Release ───────────────────────────────────────────────────
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: UniVRMA Motion Player v${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          append_body: true
+          body: |
+
+            ---
+
+            ## 📦 Install
+
+            **Package Manager → Add package from git URL** (recommended)
+            ```
+            https://github.com/${{ github.repository }}.git?path=Packages/com.univrma.motionplayer#v${{ steps.version.outputs.version }}
+            ```
+
+            **Package Manager → Add package from tarball** → `com.univrma.motionplayer-${{ steps.version.outputs.version }}.tgz`
+
+            **Legacy one-click import** → double-click `UniVRMA_MotionPlayer_v${{ steps.version.outputs.version }}.unitypackage`
+
+            | Requirement | Version |
+            | :--- | :--- |
+            | Unity | 2021.3 LTS or newer |
+            | UniVRM (`com.vrmc.vrm`) | 0.120.0+ |
+
+            ### Verify the download
+            ```
+            sha256sum -c SHA256SUMS.txt
+            ```
+
+            > This is an **alpha**. APIs may change before 1.0. Please file issues with a minimal repro.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

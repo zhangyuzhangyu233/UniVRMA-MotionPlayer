@@ -1,0 +1,151 @@
+name: 🐞 Bug Report
+description: Playback, hips height, rest pose, pooling or events — help us reproduce it.
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this! A **minimal reproduction** is the single
+        most useful thing you can give us — a fresh Unity project with one VRM, one VRMA
+        and one `VrmaPlayer` beats a 500-line explanation every time.
+
+        > ⚠️ Please do **not** paste API keys, private models or personal data.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight checklist
+      description: Please confirm before submitting.
+      options:
+        - label: I have searched [existing issues](https://github.com/your-org/UniVRMA-MotionPlayer/issues?q=is%3Aissue) and this is not a duplicate.
+          required: true
+        - label: I am running the latest `0.1.x` release (or `main`) — not an older tarball.
+          required: true
+        - label: I can reproduce this with a minimal project (one VRM + one VRMA).
+          required: false
+
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      description: From `Packages/com.univrma.motionplayer/package.json` or Package Manager.
+      placeholder: "0.1.0-alpha"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: unity-version
+    attributes:
+      label: Unity version
+      options:
+        - Unity 2021.3 LTS
+        - Unity 2022.3 LTS
+        - Unity 6000.x LTS
+        - Other (please state below)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: render-pipeline
+    attributes:
+      label: Render pipeline
+      options:
+        - Built-in Render Pipeline
+        - Universal RP (URP)
+        - High Definition RP (HDRP)
+        - Not applicable / headless
+    validations:
+      required: true
+
+  - type: input
+    id: univrm-version
+    attributes:
+      label: UniVRM version
+      description: Version of `com.vrmc.vrm` / `com.vrmc.gltf` in `Packages/manifest.json`.
+      placeholder: "0.120.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      description: Which part of the package behaves incorrectly?
+      options:
+        - VrmaPlayer — playback / Play() / Stop()
+        - StableHipsPoseProvider — floating or sinking hips
+        - VrmaControlRigUtility — 70° natural rest pose
+        - "[VRMA_Pool] — object pool / root-motion pollution"
+        - Events — C# `event Action<int>` or `UnityEvent<int>`
+        - Editor — custom Inspector / play-mode controls
+        - Installation — UPM, tarball or .unitypackage import
+        - Other / not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps, starting from a clean project.
+      placeholder: |
+        1. Create a new 3D (URP) project, import UniVRM 1.0
+        2. Import the attached model + VRMA
+        3. Add `VrmaPlayer`, drag the VRMA prefab into `vrmaPrefabs`
+        4. Enter Play Mode and press `Play(0)` in the Inspector
+        5. …
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      placeholder: The avatar walks in place with its feet on the ground.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: What happens instead? Describe visuals (floating, sinking, rotated 180°, frozen).
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console log / stack trace
+      description: Full stack trace and any `[UniVRMA]` warnings.
+      render: shell
+    validations:
+      required: false
+
+  - type: input
+    id: repro-link
+    attributes:
+      label: Minimal reproduction link (optional)
+      description: GitHub repo, video, or a link to a zip with the smallest failing project.
+      placeholder: https://github.com/you/vrma-repro
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Model height / proportions, `.vrma` source, screenshots, GIFs.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: I removed private assets, license keys and personal data from what I attached.
+          required: true

@@ -1,0 +1,13 @@
+Library/
+Temp/
+Obj/
+Build/
+Builds/
+Logs/
+UserSettings/
+*.csproj
+*.sln
+*.tgz
+dist/
+.DS_Store
+Thumbs.db

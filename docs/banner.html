@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════════════════╗
+  ║  UniVRMA Motion Player — 1200 × 480 commercial banner                     ║
+  ║  Single file. No external CSS / JS / fonts / network. Open it in Edge.    ║
+  ╠══════════════════════════════════════════════════════════════════════════╣
+  ║  ARTWORK CREDIT — REQUIRED                                                 ║
+  ║    Character: Glacier Blue (冰川蓝)                                        ║
+  ║    Illustration © 2026 @冰川蓝蓝 — all rights reserved.                    ║
+  ║    The artwork is NOT MIT-licensed; it is used here for this project's     ║
+  ║    banner / release materials only. Keep the @冰川蓝蓝 credit visible, or  ║
+  ║    delete it together with the image if you swap in different art.         ║
+  ║    Full notice: NOTICE.md                                                  ║
+  ╠══════════════════════════════════════════════════════════════════════════╣
+  ║  SWAP THE ART                                                             ║
+  ║    Drop your cut-out PNG next to this file and name it:  glacier_blue.png ║
+  ║    (transparent background recommended, ~800 × 1700 px or larger)         ║
+  ║    If the file is missing the banner shows a labelled placeholder frame.  ║
+  ╠══════════════════════════════════════════════════════════════════════════╣
+  ║  1-CLICK 4K EXPORT                                                        ║
+  ║    Windows :  powershell -ExecutionPolicy Bypass -File export\export-4k.ps1
+  ║    macOS   :  bash export/export-4k.sh                                    ║
+  ║    → export/banner_4800x1920.png  (and 1200×480 + 2400×960 previews)       ║
+  ║                                                                           ║
+  ║    Manual (Chrome / Edge):                                                ║
+  ║      msedge --headless=new --hide-scrollbars --force-device-scale-factor=4║
+  ║        --window-size=1200,480 --virtual-time-budget=6000                  ║
+  ║        --screenshot=banner_4k.png "file:///…/banner.html?still=1"         ║
+  ╠══════════════════════════════════════════════════════════════════════════╣
+  ║  URL FLAGS                                                                ║
+  ║    ?still=1   freeze every animation on a deterministic frame (export)    ║
+  ║    ?loop=1    (default) ambient motion for live preview / screen capture  ║
+  ║  KEYS:  S = toggle still frame   ·   C = copy install URL                 ║
+  ╚══════════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1200, initial-scale=1">
+<title>UniVRMA Motion Player — Banner</title>
+<style>
+/* ────────────────────────────────────────────────────────────── tokens ── */
+:root{
+  --cyan:#5fe7ff;
+  --cyan-soft:#9fe9ff;
+  --blue:#3f86ff;
+  --blue-deep:#1d3fd6;
+  --violet:#a078ff;
+  --ink:#04060f;
+  --ink-2:#070b1c;
+  --line:rgba(140,205,255,.16);
+  --line-hot:rgba(120,225,255,.42);
+  --txt:#eaf4ff;
+  --txt-dim:rgba(200,222,255,.62);
+  --font:"Inter","Segoe UI Variable Display","Segoe UI",-apple-system,BlinkMacSystemFont,"Noto Sans SC","Microsoft YaHei",sans-serif;
+  --mono:"JetBrains Mono","Cascadia Mono","SF Mono","Consolas",monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:#03050c;}
+body{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;font-family:var(--font);color:var(--txt);
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(95,231,255,.28);}
+
+html[lang="zh-CN"] .stage{font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC","Hiragino Sans GB",var(--font);}
+html[lang="zh-CN"] .ih,html[lang="ja"] .ih{text-transform:none;letter-spacing:1.2px;}
+html[lang="ja"] .stage{font-family:"Yu Gothic UI","Yu Gothic","Meiryo","Hiragino Sans","Noto Sans JP",var(--font);}
+
+/* ─────────────────────────────────────────────────────────────── stage ── */
+.stage{
+  position:relative;width:1200px;height:480px;overflow:hidden;
+  background:
+    radial-gradient(120% 150% at 8% 0%,   #0d1a4a 0%, transparent 55%),
+    radial-gradient(110% 140% at 96% 6%,  #241457 0%, transparent 52%),
+    radial-gradient(130% 160% at 72% 108%, #063a5c 0%, transparent 58%),
+    linear-gradient(118deg,#050a1a 0%,#070d24 38%,#0a0a22 62%,#050814 100%);
+  isolation:isolate;
+  box-shadow:0 0 120px rgba(0,0,0,.9);
+}
+/* faint inner vignette so the edges melt into GitHub's dark theme */
+.stage::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:40;
+  box-shadow:inset 0 0 90px 18px rgba(2,4,12,.85), inset 0 0 0 1px rgba(120,190,255,.10);
+}
+
+/* ────────────────────────────────────────────────────────── atmosphere ── */
+.aurora{position:absolute;inset:-20%;z-index:0;filter:blur(46px);opacity:.85;}
+.blob{position:absolute;border-radius:50%;mix-blend-mode:screen;}
+.blob.b1{width:620px;height:620px;left:-140px;top:-260px;
+  background:radial-gradient(circle,rgba(35,90,255,.62),rgba(35,90,255,0) 66%);
+  animation:drift-a 26s ease-in-out infinite;}
+.blob.b2{width:560px;height:560px;right:-120px;top:-200px;
+  background:radial-gradient(circle,rgba(140,70,255,.52),rgba(140,70,255,0) 66%);
+  animation:drift-b 32s ease-in-out infinite;}
+.blob.b3{width:720px;height:520px;left:26%;bottom:-330px;
+  background:radial-gradient(circle,rgba(0,190,255,.42),rgba(0,190,255,0) 66%);
+  animation:drift-c 29s ease-in-out infinite;}
+@keyframes drift-a{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(60px,30px,0) scale(1.12)}}
+@keyframes drift-b{0%,100%{transform:translate3d(0,0,0) scale(1.05)}50%{transform:translate3d(-50px,40px,0) scale(.95)}}
+@keyframes drift-c{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-40px,-26px,0) scale(1.08)}}
+
+/* engineering grid + sweeping light bar */
+.grid{
+  position:absolute;inset:0;z-index:1;opacity:.5;
+  background-image:
+    linear-gradient(rgba(122,190,255,.075) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(122,190,255,.075) 1px,transparent 1px);
+  background-size:48px 48px,48px 48px;
+  -webkit-mask-image:radial-gradient(120% 120% at 46% 34%,#000 12%,rgba(0,0,0,.55) 58%,transparent 88%);
+  mask-image:radial-gradient(120% 120% at 46% 34%,#000 12%,rgba(0,0,0,.55) 58%,transparent 88%);
+}
+.grid::after{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(150,215,255,.20) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(150,215,255,.20) 1px,transparent 1px);
+  background-size:192px 192px,192px 192px;
+}
+.sweep{
+  position:absolute;z-index:2;top:-40%;left:-30%;width:34%;height:180%;
+  background:linear-gradient(90deg,transparent,rgba(120,215,255,.10),rgba(190,240,255,.22),rgba(120,215,255,.10),transparent);
+  transform:rotate(18deg);filter:blur(6px);
+  animation:sweep 11s cubic-bezier(.6,.05,.35,.95) infinite;
+}
+@keyframes sweep{0%{transform:translateX(-30%) rotate(18deg);opacity:0}
+  12%{opacity:.9}55%{opacity:.55}100%{transform:translateX(430%) rotate(18deg);opacity:0}}
+.noise{
+  position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.045;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.scanlines{
+  position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.16;
+  background:repeating-linear-gradient(180deg,rgba(160,220,255,.16) 0 1px,transparent 1px 4px);
+  mix-blend-mode:overlay;
+}
+
+/* ─────────────────────────────────────────────────────────── left rail ── */
+.left{
+  position:absolute;left:0;top:0;width:672px;height:100%;z-index:10;
+  padding:30px 0 26px 46px;display:flex;flex-direction:column;
+}
+.brand{display:flex;align-items:center;gap:11px;height:24px;}
+.mark{width:26px;height:26px;flex:0 0 auto;filter:drop-shadow(0 0 9px rgba(95,231,255,.55));}
+.wordmark{
+  font-size:12.5px;font-weight:700;letter-spacing:5.4px;color:rgba(232,246,255,.9);
+  text-transform:uppercase;
+}
+.wordmark b{color:var(--cyan);font-weight:800;}
+.brand-sep{width:1px;height:14px;background:var(--line);margin:0 3px;}
+.open-pill{
+  display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:99px;
+  border:1px solid rgba(120,235,200,.30);background:rgba(40,220,170,.09);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:1.4px;color:#8dffd6;
+}
+.pulse{width:5px;height:5px;border-radius:50%;background:#5affc8;box-shadow:0 0 8px #5affc8;
+  animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.72)}}
+
+
+/* headline */
+.title{margin-top:15px;position:relative;}
+.title .glowtext{
+  font-size:90px;line-height:.94;font-weight:800;letter-spacing:-4.2px;
+  background:linear-gradient(96deg,#ffffff 0%,#d9f4ff 18%,#8fe2ff 42%,#4fb4ff 62%,#8f8cff 84%,#c9a8ff 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 26px rgba(80,190,255,.42)) drop-shadow(0 6px 18px rgba(20,60,160,.55));
+  display:inline-block;
+}
+.subline{
+  margin-top:5px;display:flex;align-items:baseline;gap:12px;
+}
+.subline .t2{
+  font-size:42px;line-height:1.05;font-weight:700;letter-spacing:1.4px;
+  background:linear-gradient(92deg,#eaf7ff,#a9d8ff 55%,#7fa4ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+}
+
+.rule{height:1px;width:560px;margin:13px 0 0;
+  background:linear-gradient(90deg,rgba(95,231,255,.75),rgba(95,231,255,.18) 45%,transparent 88%);
+  position:relative;}
+.rule::before{content:"";position:absolute;left:0;top:-1.5px;width:34px;height:4px;
+  background:var(--cyan);filter:blur(2px);opacity:.85;}
+
+.tagline{
+  margin-top:14px;font-size:15.2px;line-height:1.5;letter-spacing:.2px;max-width:620px;
+  color:rgba(212,232,255,.82);font-weight:400;
+}
+.tagline b{color:#9fe9ff;font-weight:600;}
+
+/* capsules */
+.chips{display:flex;gap:7px;margin-top:15px;flex-wrap:nowrap;}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:7px;
+  border:1px solid rgba(140,205,255,.22);
+  background:linear-gradient(180deg,rgba(130,200,255,.13),rgba(90,150,255,.05));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 4px 14px rgba(0,10,40,.35);
+  font-family:var(--mono);font-size:10.4px;letter-spacing:.5px;color:rgba(222,240,255,.92);
+  white-space:nowrap;
+}
+.chip i{width:5px;height:5px;border-radius:1.5px;flex:0 0 auto;}
+.chip .c1{background:#7fe3ff;box-shadow:0 0 7px #7fe3ff;}
+.chip .c2{background:#8f9dff;box-shadow:0 0 7px #8f9dff;}
+.chip .c3{background:#63ffd0;box-shadow:0 0 7px #63ffd0;}
+.chip .c4{background:#ffd479;box-shadow:0 0 7px #ffd479;}
+.chip.hot{border-color:rgba(95,231,255,.45);background:linear-gradient(180deg,rgba(95,231,255,.22),rgba(60,140,255,.08));}
+
+/* install strip */
+.install{
+  margin-top:auto;width:586px;border-radius:9px;padding:9px 13px 10px;
+  border:1px solid rgba(140,205,255,.18);
+  background:linear-gradient(180deg,rgba(16,30,66,.55),rgba(8,16,40,.42));
+  backdrop-filter:blur(12px) saturate(150%);-webkit-backdrop-filter:blur(12px) saturate(150%);
+  box-shadow:0 14px 34px -18px rgba(0,8,30,.9),inset 0 1px 0 rgba(255,255,255,.09);
+  position:relative;overflow:hidden;
+}
+.install::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,var(--cyan),rgba(95,231,255,0));
+}
+.install-head{display:flex;align-items:center;gap:7px;margin-bottom:4px;}
+.ver{margin-left:auto;font-family:var(--mono);font-size:8.2px;letter-spacing:.6px;color:#c9b6ff;
+  padding:1px 6px;border-radius:3px;border:1px solid rgba(160,120,255,.28);background:rgba(160,120,255,.1);}
+.ih{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:8.6px;
+  letter-spacing:2.1px;color:rgba(150,220,255,.68);text-transform:uppercase;}
+.ih svg{opacity:.8;}
+.url{
+  font-family:var(--mono);font-size:12.2px;letter-spacing:-.1px;white-space:nowrap;
+  color:#dff3ff;display:block;overflow:hidden;text-overflow:ellipsis;
+}
+.url .proto{color:rgba(140,215,255,.4);}
+.url .org{color:#7fe3ff;}
+.url .repo{color:#ffffff;font-weight:600;}
+
+/* ────────────────────────────────────────────────────────── right stage ── */
+.right{position:absolute;left:660px;top:0;width:540px;height:480px;z-index:12;}
+.halo{
+  position:absolute;left:342px;top:236px;width:560px;height:560px;transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(70,170,255,.34) 0%,rgba(120,80,255,.16) 38%,transparent 68%);
+  filter:blur(14px);
+  animation:breathe 9s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{opacity:.85;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+
+.holo-rings{position:absolute;left:342px;top:236px;width:470px;height:470px;
+  transform:translate(-50%,-50%);overflow:visible;opacity:1;
+  filter:drop-shadow(0 0 5px rgba(90,200,255,.22));}
+.holo-rings .spin1{animation:spin 34s linear infinite;transform-origin:235px 235px;}
+.holo-rings .spin2{animation:spin 22s linear infinite reverse;transform-origin:235px 235px;}
+.holo-rings .spin3{animation:spin 52s linear infinite;transform-origin:235px 235px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.arc-sweep{
+  position:absolute;left:342px;top:236px;width:470px;height:470px;transform:translate(-50%,-50%);
+  border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 0deg,transparent 0deg 286deg,rgba(95,231,255,0) 300deg,rgba(95,231,255,.55) 348deg,rgba(95,231,255,0) 360deg);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2px));
+  mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2px));
+  animation:spin 7.5s linear infinite;filter:drop-shadow(0 0 6px rgba(95,231,255,.8));
+}
+
+/* character */
+.char-bed{
+  position:absolute;left:118px;top:-50px;width:452px;height:570px;z-index:5;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 46%,rgba(3,7,18,.80) 0%,rgba(3,7,18,.42) 44%,transparent 72%);
+  filter:blur(12px);
+}
+.char-wrap{
+  position:absolute;left:144px;top:3px;width:396px;height:474px;
+  filter:drop-shadow(0 0 22px rgba(90,200,255,.38))
+         drop-shadow(0 0 52px rgba(60,170,255,.22)) drop-shadow(0 22px 36px rgba(0,6,24,.5));
+  z-index:6;
+}
+.char-wrap img.char{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;
+  animation:breathe-char 7s ease-in-out infinite;
+  -webkit-user-drag:none;user-select:none;
+}
+@keyframes breathe-char{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.char-echo{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;
+  opacity:.10;filter:blur(9px) saturate(0) brightness(1.9);
+  transform:scale(1.05);mix-blend-mode:screen;pointer-events:none;
+  animation:breathe-char 7s ease-in-out infinite;
+}
+
+/* ground glow so the character is planted, not floating */
+.floor{
+  position:absolute;left:342px;bottom:-18px;width:400px;height:80px;transform:translateX(-50%);
+  background:radial-gradient(ellipse at 50% 55%,rgba(95,225,255,.34),rgba(70,140,255,.12) 46%,transparent 72%);
+  filter:blur(8px);z-index:5;pointer-events:none;
+  animation:floorpulse 8s ease-in-out infinite;
+}
+@keyframes floorpulse{0%,100%{opacity:.75}50%{opacity:1}}
+
+/* corner HUD brackets */
+.hud-corners{position:absolute;inset:13px;z-index:36;pointer-events:none;opacity:.55;}
+.hud-corners i{position:absolute;width:15px;height:15px;border:1px solid rgba(120,225,255,.42);}
+.hud-corners i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0;}
+.hud-corners i:nth-child(2){right:0;top:0;border-left:0;border-bottom:0;}
+.hud-corners i:nth-child(3){left:0;bottom:0;border-right:0;border-top:0;}
+.hud-corners i:nth-child(4){right:0;bottom:0;border-left:0;border-top:0;}
+
+/* scan line across character */
+.scanbar{
+  position:absolute;left:-6%;width:112%;height:2px;top:10%;
+  background:linear-gradient(90deg,transparent,rgba(130,240,255,.85),rgba(220,250,255,.95),rgba(130,240,255,.85),transparent);
+  box-shadow:0 0 18px 4px rgba(95,231,255,.55);opacity:.75;
+  animation:scanmove 6.5s cubic-bezier(.55,.05,.45,.95) infinite;
+}
+@keyframes scanmove{0%{top:2%;opacity:0}8%{opacity:.75}45%{opacity:.45}85%{opacity:0}100%{top:98%;opacity:0}}
+
+/* placeholder when glacier_blue.png is absent */
+.char-fallback{
+  position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  border:1px dashed rgba(120,225,255,.45);border-radius:120px 120px 12px 12px;background:rgba(20,60,120,.18);
+  box-shadow:inset 0 0 60px rgba(60,160,255,.18);
+}
+.char-fallback svg{opacity:.7;}
+.char-fallback span{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(150,220,255,.75);text-align:center;line-height:1.7}
+.char-wrap.missing img{display:none;}
+.char-wrap.missing .char-fallback{display:flex;}
+
+/* data chips + connectors */
+.connectors{position:absolute;inset:0;width:540px;height:480px;z-index:5;pointer-events:none;overflow:visible;}
+.connectors path{fill:none;stroke:rgba(120,225,255,.42);stroke-width:1;stroke-dasharray:3 5;
+  filter:drop-shadow(0 0 3px rgba(95,231,255,.5));animation:dash 9s linear infinite;}
+@keyframes dash{to{stroke-dashoffset:-64;}}
+.datachip{
+  position:absolute;z-index:9;display:flex;align-items:center;gap:7px;
+  padding:5px 10px 5px 8px;border-radius:6px;white-space:nowrap;
+  border:1px solid rgba(120,225,255,.30);
+  background:linear-gradient(180deg,rgba(20,44,86,.78),rgba(10,20,44,.72));
+  backdrop-filter:blur(10px) saturate(160%);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 10px 26px -10px rgba(0,10,40,.9),inset 0 1px 0 rgba(255,255,255,.12),
+             0 0 22px rgba(60,170,255,.14);
+  font-family:var(--mono);font-size:10.2px;letter-spacing:.4px;color:#e6f7ff;
+  animation:floaty 7s ease-in-out infinite;
+}
+.datachip .led{width:4px;height:4px;border-radius:50%;background:var(--cyan);box-shadow:0 0 7px var(--cyan);}
+.datachip.violet{border-color:rgba(170,130,255,.32);box-shadow:0 0 22px rgba(150,100,255,.16),inset 0 1px 0 rgba(255,255,255,.1);}
+.datachip.violet .led{background:#bda3ff;box-shadow:0 0 7px #bda3ff;}
+.datachip.green{border-color:rgba(99,255,208,.32);}
+.datachip.green .led{background:#63ffd0;box-shadow:0 0 7px #63ffd0;}
+.chip-a{left:16px;top:118px;animation-delay:-1s;}
+.chip-b{left:8px;top:236px;animation-delay:-3.6s;}
+.chip-c{left:18px;top:356px;animation-delay:-2.2s;}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* language switch (hidden in export) */
+.lang-switch{
+  position:absolute;right:34px;top:30px;z-index:45;display:flex;align-items:center;gap:1px;
+  padding:2px;border-radius:5px;border:1px solid rgba(120,200,255,.22);
+  background:rgba(8,18,40,.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  opacity:.45;transition:opacity .2s;
+}
+.stage:hover .lang-switch{opacity:1;}
+.lang-switch button{
+  appearance:none;border:0;background:transparent;cursor:pointer;
+  font-family:var(--mono);font-size:8px;letter-spacing:1px;color:rgba(160,205,240,.75);
+  padding:2px 5px;border-radius:3px;line-height:1.4;
+}
+.lang-switch button.on{background:rgba(95,231,255,.16);color:#aef2ff;box-shadow:inset 0 0 0 1px rgba(95,231,255,.35);}
+
+/* artwork credit (do not remove unless you replace the illustration) */
+.credit{
+  position:absolute;right:14px;bottom:10px;z-index:37;pointer-events:none;
+  display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 9px;border-radius:4px;
+  background:rgba(5,10,24,.52);border:1px solid rgba(120,200,255,.14);
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
+  font-family:var(--mono);font-size:7.8px;letter-spacing:1.7px;text-transform:uppercase;line-height:1.3;
+  color:rgba(196,228,254,.82);white-space:nowrap;
+}
+.credit b{color:rgba(176,248,255,.95);font-weight:600;letter-spacing:1px;}
+html:not(.still) .credit{color:rgba(186,220,250,.6);}
+
+/* particles */
+.particles{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;}
+.p{position:absolute;border-radius:50%;background:#bfefff;
+  box-shadow:0 0 6px 1px rgba(140,235,255,.85);animation:rise linear infinite;}
+@keyframes rise{
+  0%{transform:translate3d(0,0,0);opacity:0}
+  12%{opacity:.9}
+  70%{opacity:.55}
+  100%{transform:translate3d(var(--dx,10px),-120px,0);opacity:0}
+}
+
+/* bottom waveform */
+.wave{position:absolute;left:0;bottom:0;width:100%;height:70px;z-index:4;opacity:.55;pointer-events:none;}
+.wave path{fill:none;stroke:url(#waveGrad);stroke-width:1.2;}
+.wave .glow{stroke-width:3;opacity:.18;filter:blur(3px);}
+.wave .flow{stroke-dasharray:8 220;animation:flow 6s linear infinite;}
+@keyframes flow{to{stroke-dashoffset:-228;}}
+
+/* hint */
+.hint{
+  position:absolute;right:14px;bottom:38px;z-index:50;
+  font-family:var(--mono);font-size:8px;letter-spacing:1.6px;color:rgba(150,210,255,.55);
+  border:1px solid rgba(120,200,255,.18);border-radius:4px;padding:3px 7px;
+  background:rgba(6,14,32,.6);opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.stage:hover .hint{opacity:1;}
+
+/* ───────────────────────────────────────────── still / reduced motion ── */
+html.still *,html.still *::before,html.still *::after{animation:none !important;transition:none !important;}
+html.still .sweep{opacity:0;}
+html.still .scanbar{opacity:0;}
+html.still .hint{display:none;}
+html.still .lang-switch{display:none;}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;}
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- atmosphere -->
+  <div class="aurora">
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  </div>
+  <div class="grid"></div>
+  <div class="sweep"></div>
+  <div class="scanlines"></div>
+  <div class="noise"></div>
+
+  <!-- ─────────────────────────────── LEFT ─────────────────────────────── -->
+  <section class="left">
+
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="mg" x1="4" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#9ff3ff"/><stop offset=".55" stop-color="#4aa8ff"/><stop offset="1" stop-color="#9a7bff"/>
+          </linearGradient>
+        </defs>
+        <path d="M16 2.6 27.6 9v14L16 29.4 4.4 23V9L16 2.6Z" stroke="url(#mg)" stroke-width="1.4" fill="rgba(70,160,255,.10)"/>
+        <path d="M20.4 16 13 20.3v-8.6L20.4 16Z" fill="#c9f4ff"/>
+        <circle cx="16" cy="16" r="12.4" stroke="rgba(150,230,255,.18)" stroke-width=".8" stroke-dasharray="1.5 4"/>
+      </svg>
+      <div class="wordmark">Uni<b>VRMA</b></div>
+      <div class="brand-sep"></div>
+      <div class="open-pill"><span class="pulse"></span><span data-i18n="open">OPEN SOURCE</span></div>
+    </div>
+
+    <div class="title">
+      <div class="glowtext">UniVRMA</div>
+      <div class="subline">
+        <span class="t2" data-i18n="subtitle">Motion Player</span>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+
+    <div class="tagline" data-i18n-html="tagline">
+      Zero-GC VRMA motion engine for Unity. Stable hips, 70° natural rest pose.
+    </div>
+
+    <div class="chips">
+      <span class="chip"><i class="c1"></i><span data-i18n="chipUnity">Unity 2021.3+</span></span>
+      <span class="chip"><i class="c2"></i><span data-i18n="chipUnivrm">UniVRM 1.0</span></span>
+      <span class="chip hot"><i class="c3"></i><span data-i18n="chipGc">0 GC Runtime</span></span>
+      <span class="chip"><i class="c4"></i><span data-i18n="chipMit">MIT License</span></span>
+    </div>
+
+    <div class="install">
+      <div class="install-head">
+        <div class="ih">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="#7fe3ff" stroke-width="1.4">
+            <path d="M2.5 3.5 6 8l-3.5 4.5M8 13h5"/>
+          </svg>
+          <span data-i18n="installHead">Add package from git URL</span>
+        </div>
+        <span class="ver">v0.1.0-alpha</span>
+      </div>
+      <code class="url" id="installUrl"><span class="proto">https://</span>github.com/<span class="org">zhangyuzhangyu233</span>/<span class="repo">UniVRMA-MotionPlayer</span>.git</code>
+    </div>
+
+  </section>
+
+  <!-- ─────────────────────────────── RIGHT ────────────────────────────── -->
+  <section class="right">
+    <div class="halo"></div>
+
+    <svg class="holo-rings" viewBox="0 0 470 470" aria-hidden="true">
+      <defs>
+        <linearGradient id="rg" x1="40" y1="30" x2="430" y2="440" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#8ff0ff" stop-opacity=".85"/>
+          <stop offset=".5" stop-color="#4a9dff" stop-opacity=".35"/>
+          <stop offset="1" stop-color="#a07bff" stop-opacity=".7"/>
+        </linearGradient>
+        <linearGradient id="rg2" x1="470" y1="60" x2="40" y2="400" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#c9a8ff" stop-opacity=".0"/>
+          <stop offset=".55" stop-color="#9fd8ff" stop-opacity=".55"/>
+          <stop offset="1" stop-color="#5fe7ff" stop-opacity=".0"/>
+        </linearGradient>
+      </defs>
+
+      <!-- tick ring -->
+      <g class="spin3" opacity=".55">
+        <circle cx="235" cy="235" r="212" fill="none" stroke="url(#rg)" stroke-width="1" stroke-dasharray="1.5 7"/>
+        <circle cx="235" cy="235" r="196" fill="none" stroke="rgba(140,220,255,.10)" stroke-width="1"/>
+      </g>
+
+      <!-- main rotating arcs -->
+      <g class="spin1">
+        <circle cx="235" cy="235" r="168" fill="none" stroke="url(#rg)" stroke-width="1.4"
+                stroke-dasharray="120 340 60 380" stroke-linecap="round"/>
+        <circle cx="235" cy="235" r="168" fill="none" stroke="url(#rg2)" stroke-width="6" opacity=".18"
+                stroke-dasharray="120 900" stroke-linecap="round"/>
+        <circle cx="235" cy="235" r="150" fill="none" stroke="rgba(150,235,255,.16)" stroke-width="1"/>
+      </g>
+
+      <g class="spin2">
+        <circle cx="235" cy="235" r="186" fill="none" stroke="rgba(170,230,255,.35)" stroke-width="1"
+                stroke-dasharray="2 13"/>
+        <circle cx="235" cy="235" r="186" fill="none" stroke="url(#rg)" stroke-width="1.6"
+                stroke-dasharray="70 1000" stroke-linecap="round"/>
+        <!-- data ticks -->
+        <g stroke="rgba(150,225,255,.5)" stroke-width="1">
+          <line x1="235" y1="49" x2="235" y2="38"/><line x1="235" y1="421" x2="235" y2="432"/>
+          <line x1="49" y1="235" x2="38" y2="235"/><line x1="421" y1="235" x2="432" y2="235"/>
+        </g>
+      </g>
+
+      <!-- inner core ring -->
+      <circle cx="235" cy="235" r="132" fill="none" stroke="rgba(120,230,255,.14)" stroke-width="1"
+              stroke-dasharray="1 6" class="spin3"/>
+      <circle cx="235" cy="235" r="118" fill="rgba(60,150,255,.05)" stroke="rgba(120,230,255,.10)" stroke-width="1"/>
+    </svg>
+
+    <div class="arc-sweep"></div>
+    <div class="floor"></div>
+    <div class="char-bed"></div>
+
+    <!-- character -->
+    <div class="char-wrap" id="charWrap">
+      <img class="char-echo" src="glacier_blue.png" alt="" aria-hidden="true">
+      <img class="char" id="char" src="glacier_blue.png"
+           alt="Glacier Blue — original VRMA showcase character">
+      <div class="scanbar"></div>
+      <div class="char-fallback">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#7fe3ff" stroke-width="1.2">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/>
+          <path d="m3 17 5-5 4 4 3-3 6 6"/>
+        </svg>
+        <span>glacier_blue.png<br>DROP YOUR CUT-OUT HERE</span>
+      </div>
+    </div>
+
+    <svg class="connectors" viewBox="0 0 540 480" aria-hidden="true">
+      <path d="M148 130 L176 142 L202 158"/>
+      <path d="M130 248 L166 258 L198 268"/>
+      <path d="M152 368 L188 360 L224 346"/>
+      <circle cx="202" cy="158" r="2" fill="#7fe9ff"/>
+      <circle cx="198" cy="268" r="2" fill="#7fe9ff"/>
+      <circle cx="224" cy="346" r="2" fill="#7fe9ff"/>
+    </svg>
+
+    <div class="datachip chip-a"><span class="led"></span>Play(0)</div>
+    <div class="datachip chip-b violet"><span class="led"></span>60 FPS</div>
+    <div class="datachip chip-c green"><span class="led"></span>Stable Hips</div>
+
+    <div class="particles" id="particles"></div>
+  </section>
+
+  <!-- bottom waveform -->
+  <svg class="wave" viewBox="0 0 1200 70" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="waveGrad" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#5fe7ff" stop-opacity="0"/>
+        <stop offset=".3" stop-color="#5fe7ff" stop-opacity=".55"/>
+        <stop offset=".72" stop-color="#8f9dff" stop-opacity=".45"/>
+        <stop offset="1" stop-color="#a078ff" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path class="glow" d="M0 54 L1200 54"/>
+    <path class="flow" d="M0 54 L60 54 L70 40 L80 68 L90 30 L100 60 L110 48 L120 54 L1200 54"/>
+    <path d="M0 54 H1200" opacity=".22"/>
+  </svg>
+
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button type="button" data-set-lang="en">EN</button>
+    <button type="button" data-set-lang="zh">中</button>
+    <button type="button" data-set-lang="ja">日</button>
+  </div>
+  <div class="credit"><span data-i18n="credit">Illustration</span> © <b>@冰川蓝蓝</b></div>
+  <div class="hud-corners"><i></i><i></i><i></i><i></i></div>
+  <div class="hint">S · STILL &nbsp;|&nbsp; C · COPY URL &nbsp;|&nbsp; 4K: export/export-4k.ps1</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+
+  /* ── i18n: EN / 简体中文 / 日本語 ───────────────────────────────────── */
+  var I18N = {
+    en: {
+      title: "UniVRMA Motion Player — Zero-GC VRMA Engine for Unity",
+      open: "OPEN SOURCE",
+      subtitle: "Motion Player",
+      tagline: "<b>Zero-GC</b> VRMA motion engine for Unity. Stable hips, 70° natural rest pose.",
+      chipGc: "0 GC Runtime", chipMit: "MIT License",
+      installHead: "Add package from git URL",
+      credit: "Illustration", alt: "Glacier Blue — original VRMA showcase character"
+    },
+    zh: {
+      title: "UniVRMA Motion Player — Unity VRMA 动作引擎",
+      open: "开源项目",
+      subtitle: "Motion Player",
+      tagline: "<b>零 GC</b> 的 Unity VRMA 动作引擎。骨盆稳定，70° 自然少女站姿。",
+      chipGc: "0 GC 运行时", chipMit: "MIT 协议",
+      installHead: "从 Git URL 添加包",
+      credit: "立绘", alt: "冰川蓝 — VRMA 演示角色，立绘作者 @冰川蓝蓝"
+    },
+    ja: {
+      title: "UniVRMA Motion Player — Unity VRMA モーションエンジン",
+      open: "オープンソース",
+      subtitle: "Motion Player",
+      tagline: "<b>ゼロGC</b>の Unity VRMA エンジン。腰位置は安定、70°の自然な待機姿勢。",
+      chipGc: "0 GC ランタイム", chipMit: "MIT ライセンス",
+      installHead: "Git URL から追加",
+      credit: "イラスト", alt: "氷川藍 — VRMA デモキャラクター、イラスト @冰川蓝蓝"
+    }
+  };
+  var LANGS = ["en", "zh", "ja"];
+  var current = I18N.en;
+
+  function normalizeLang(tag) {
+    tag = (tag || "").toLowerCase();
+    if (tag.indexOf("zh") === 0) return "zh";
+    if (tag.indexOf("ja") === 0) return "ja";
+    return "en";
+  }
+
+  function applyLang(lang) {
+    lang = LANGS.indexOf(lang) >= 0 ? lang : "en";
+    current = I18N[lang];
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
+    document.title = current.title;
+    var nodes = document.querySelectorAll("[data-i18n]");
+    for (var i = 0; i < nodes.length; i++) {
+      var key = nodes[i].getAttribute("data-i18n");
+      if (current[key] != null) nodes[i].textContent = current[key];
+    }
+    var htmlNodes = document.querySelectorAll("[data-i18n-html]");
+    for (var j = 0; j < htmlNodes.length; j++) {
+      var hkey = htmlNodes[j].getAttribute("data-i18n-html");
+      if (current[hkey] != null) htmlNodes[j].innerHTML = current[hkey];
+    }
+    var buttons = document.querySelectorAll(".lang-switch button");
+    for (var b = 0; b < buttons.length; b++) {
+      buttons[b].classList.toggle("on", buttons[b].getAttribute("data-set-lang") === lang);
+    }
+    var img = document.getElementById("char");
+    if (img) img.alt = current.alt;
+    window.__lang = lang;
+  }
+
+  /* deterministic still frame for pixel-perfect exports */
+  var params = new URLSearchParams(location.search);
+  var forceStill = params.get("still") === "1";
+  applyLang(params.get("lang") || normalizeLang(navigator.language));
+  var langButtons = document.querySelectorAll(".lang-switch button");
+  for (var lb = 0; lb < langButtons.length; lb++) {
+    langButtons[lb].addEventListener("click", function (ev) {
+      var next = ev.currentTarget.getAttribute("data-set-lang");
+      applyLang(next);
+      try {
+        var url = new URL(location.href);
+        url.searchParams.set("lang", next);
+        history.replaceState(null, "", url);
+      } catch (err) { /* file:// in some browsers */ }
+    });
+  }
+  if (forceStill) document.documentElement.classList.add("still");
+  document.addEventListener("keydown", function(e){
+    if (e.key === "s" || e.key === "S") document.documentElement.classList.toggle("still");
+  });
+
+  /* seeded PRNG so every render scatters particles identically */
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  var rand = mulberry32(20260123);
+  var host = document.getElementById("particles");
+  if (host){
+    var n = 34;
+    for (var i = 0; i < n; i++){
+      var p = document.createElement("span");
+      p.className = "p";
+      var x = rand() * 100, y = 62 + rand() * 46;
+      var size = 1.1 + rand() * 2.1;
+      var dur = 7 + rand() * 9;
+      p.style.left = x.toFixed(2) + "%";
+      p.style.top = y.toFixed(2) + "%";
+      p.style.width = size.toFixed(2) + "px";
+      p.style.height = size.toFixed(2) + "px";
+      p.style.opacity = (0.25 + rand() * 0.55).toFixed(2);
+      p.style.setProperty("--dx", (rand() * 40 - 20).toFixed(1) + "px");
+      p.style.animationDuration = dur.toFixed(2) + "s";
+      p.style.animationDelay = (-rand() * dur).toFixed(2) + "s";
+      if (rand() > 0.78) p.style.background = "#c9b0ff";
+      host.appendChild(p);
+    }
+  }
+
+  /* copy install URL (clipboard API + file:// fallback) — press C */
+  var URL_TEXT = "https://github.com/zhangyuzhangyu233/UniVRMA-MotionPlayer.git";
+  function copy(){
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(URL_TEXT).catch(legacyCopy);
+    } else legacyCopy();
+  }
+  function legacyCopy(){
+    var ta = document.createElement("textarea");
+    ta.value = URL_TEXT; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch(err) {}
+    document.body.removeChild(ta);
+  }
+  document.addEventListener("keydown", function(e){
+    if ((e.key === "c" || e.key === "C") && !e.metaKey && !e.ctrlKey) copy();
+  });
+
+  /* graceful placeholder if the art has not been dropped in yet */
+  var img = document.getElementById("char");
+  var wrap = document.getElementById("charWrap");
+  function markMissing(){ if (wrap) wrap.classList.add("missing"); }
+  if (img){
+    img.addEventListener("error", markMissing);
+    if (img.complete && img.naturalWidth === 0) markMissing();
+  }
+
+  /* subtle parallax on the hologram layer (skipped in export / still mode) */
+  var stage = document.getElementById("stage");
+  var right = document.querySelector(".right");
+  if (stage && right && !forceStill && window.matchMedia("(pointer:fine)").matches){
+    stage.addEventListener("mousemove", function(e){
+      var r = stage.getBoundingClientRect();
+      var dx = (e.clientX - r.left) / r.width - 0.5;
+      var dy = (e.clientY - r.top) / r.height - 0.5;
+      right.style.transform = "translate3d(" + (dx * 7).toFixed(2) + "px," + (dy * 6).toFixed(2) + "px,0)";
+    });
+    stage.addEventListener("mouseleave", function(){
+      right.style.transform = "";
+    });
+  }
+})();
+</script>
+</body>
+</html>

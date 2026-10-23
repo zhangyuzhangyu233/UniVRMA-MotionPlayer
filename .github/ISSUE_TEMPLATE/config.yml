@@ -1,0 +1,12 @@
+# Issue / discussion routing for UniVRMA Motion Player.
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Ask a question & show your work
+    url: https://github.com/zhangyuzhangyu233/UniVRMA-MotionPlayer/discussions
+    about: Setup help, "is this supposed to happen?", screenshots, and showcase posts.
+  - name: 📖 Documentation & Quick Start
+    url: https://github.com/zhangyuzhangyu233/UniVRMA-MotionPlayer#readme
+    about: Installation, API reference and the 70° rest-pose guide.
+  - name: 🔐 Report a security issue
+    url: https://github.com/zhangyuzhangyu233/UniVRMA-MotionPlayer/security/advisories/new
+    about: Please report vulnerabilities privately, not as a public issue.
